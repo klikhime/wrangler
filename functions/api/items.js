@@ -1,6 +1,11 @@
 // functions/api/items.js
 export default {
   async fetch(request, env, context) {
+    const url = new URL(request.url);
+    // Only handle /api/items requests
+    if (url.pathname !== "/api/items") {
+      return new Response("Not Found", { status: 404 });
+    }
     // Common headers including CORS and Content-Type
     const commonHeaders = {
       "Access-Control-Allow-Origin": "*",
