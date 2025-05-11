@@ -2,6 +2,8 @@ name = "website-cf-d1"
 main = "functions/api/items.js"
 compatibility_date = "2024-05-01"
 
+workers_dev = true
+
 [site]
 bucket = "./"
 

@@ -42,12 +42,21 @@ async function fetchItems() {
     // Verify content type
     const contentType = response.headers.get("content-type");
     if (!contentType?.includes("application/json")) {
-      throw new Error(`Unexpected content type: ${contentType}`);
+      const errorBody = await response.text();
+      throw new Error(
+        `Unexpected content type: ${contentType}. Response: ${errorBody.slice(
+          0,
+          100
+        )}`
+      );
     }
 
     // Parse response with error handling
     let data;
     try {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       data = await response.json();
     } catch (error) {
       throw new Error(`JSON parse error: ${error.message}`);
