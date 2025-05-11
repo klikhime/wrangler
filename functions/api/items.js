@@ -49,7 +49,10 @@ export default {
         return Response.json(
           { items: results || [] },
           {
-            headers: corsHeaders,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
           }
         );
       } catch (error) {
@@ -61,7 +64,10 @@ export default {
           },
           {
             status: 500,
-            headers: corsHeaders,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
           }
         );
       }
