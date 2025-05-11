@@ -3,14 +3,15 @@ export async function onRequest(context) {
   // Handle CORS
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
   // Handle OPTIONS request for CORS preflight
   if (context.request.method === "OPTIONS") {
     return new Response(null, {
       headers: corsHeaders,
+      status: 204,
     });
   }
 
@@ -97,7 +98,7 @@ export async function onRequest(context) {
       let result;
       try {
         const stmt = await context.env.DB.prepare(
-          "INSERT INTO items (name, description) VALUES (?, ?)"
+          "INSERT INTO items (name, description) VALUES (?, ?) RETURNING *"
         );
         result = await stmt.bind(name, description).run();
       } catch (dbError) {
