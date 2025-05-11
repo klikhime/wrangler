@@ -21,9 +21,16 @@ async function fetchItems() {
 
   try {
     console.log("Fetching items from API...");
-    const response = await fetch("/api/items");
+
+    // Tambahkan timestamp untuk menghindari cache
+    const timestamp = new Date().getTime();
+    const response = await fetch(`/api/items?t=${timestamp}`);
 
     console.log("API response status:", response.status);
+    console.log(
+      "Response headers:",
+      Object.fromEntries([...response.headers.entries()])
+    );
 
     if (!response.ok) {
       // Try to read error details from response
@@ -41,22 +48,23 @@ async function fetchItems() {
 
     // Verify content type
     const contentType = response.headers.get("content-type");
-    if (!contentType?.includes("application/json")) {
-      const errorBody = await response.text();
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error("Unexpected content type:", contentType);
+
+      // Coba parse sebagai text untuk debugging
+      const responseText = await response.text();
+      console.error("Response text:", responseText.slice(0, 500));
+
       throw new Error(
-        `Unexpected content type: ${contentType}. Response: ${errorBody.slice(
-          0,
-          100
-        )}`
+        `Unexpected content type: ${
+          contentType || "not set"
+        }. Check console for details.`
       );
     }
 
     // Parse response with error handling
     let data;
     try {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
       data = await response.json();
     } catch (error) {
       throw new Error(`JSON parse error: ${error.message}`);
@@ -105,7 +113,6 @@ async function addItem(name, description) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
       },
       body: JSON.stringify({ name, description }),
     });
