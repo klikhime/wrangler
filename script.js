@@ -39,7 +39,19 @@ async function fetchItems() {
       throw new Error(`Server error: ${errorDetails}`);
     }
 
-    const data = await response.json();
+    // Verify content type
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      throw new Error(`Unexpected content type: ${contentType}`);
+    }
+
+    // Parse response with error handling
+    let data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error(`JSON parse error: ${error.message}`);
+    }
     console.log("API data received:", data);
 
     // Check if items property exists and is an array
