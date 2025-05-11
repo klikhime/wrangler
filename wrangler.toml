@@ -1,0 +1,10 @@
+name = "website-cf-d1"
+compatibility_date = "2023-12-01"
+
+[site]
+bucket = "./"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "items-db"
+database_id = "a1aefe89-31c6-4a4a-ad23-40ff6a7fd368"

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Website Sederhana dengan Cloudflare dan D1</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Website Saya</h1>
+      <nav>
+        <ul>
+          <li><a href="/">Beranda</a></li>
+          <li><a href="/about">Tentang</a></li>
+          <li><a href="/contact">Kontak</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section id="content">
+        <h2>Selamat Datang!</h2>
+        <p>
+          Ini adalah website sederhana yang menggunakan Cloudflare Pages dan
+          database D1.
+        </p>
+
+        <div id="data-container">
+          <h3>Data dari D1 Database:</h3>
+          <div id="data-list">Loading...</div>
+        </div>
+
+        <form id="add-item-form">
+          <h3>Tambah Item Baru</h3>
+          <input type="text" id="item-name" placeholder="Nama Item" required />
+          <textarea
+            id="item-description"
+            placeholder="Deskripsi"
+            required
+          ></textarea>
+          <button type="submit">Tambah Item</button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Website Saya</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
