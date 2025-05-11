@@ -16,14 +16,38 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function fetchItems() {
-  try {
-    const response = await fetch("/api/items");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
+  const dataList = document.getElementById("data-list");
+  dataList.innerHTML = "<p>Loading data...</p>";
 
-    const dataList = document.getElementById("data-list");
+  try {
+    console.log("Fetching items from API...");
+    const response = await fetch("/api/items");
+
+    console.log("API response status:", response.status);
+
+    if (!response.ok) {
+      // Try to read error details from response
+      let errorDetails = "";
+      try {
+        const errorData = await response.json();
+        errorDetails = errorData.error || errorData.details || "";
+      } catch (e) {
+        // If parsing fails, use status text
+        errorDetails = response.statusText;
+      }
+
+      throw new Error(`Server error: ${errorDetails}`);
+    }
+
+    const data = await response.json();
+    console.log("API data received:", data);
+
+    // Check if items property exists and is an array
+    if (!data.items || !Array.isArray(data.items)) {
+      dataList.innerHTML = "<p>Invalid data format received from server.</p>";
+      console.error("Invalid data format:", data);
+      return;
+    }
 
     if (data.items.length === 0) {
       dataList.innerHTML = "<p>Tidak ada data.</p>";
@@ -33,26 +57,29 @@ async function fetchItems() {
     let html = "";
     data.items.forEach((item) => {
       html += `
-                <div class="data-item">
-                    <h4>${item.name}</h4>
-                    <p>${item.description}</p>
-                    <small>Created: ${new Date(
-                      item.created_at
-                    ).toLocaleString()}</small>
-                </div>
-            `;
+              <div class="data-item">
+                  <h4>${item.name || "No Name"}</h4>
+                  <p>${item.description || "No Description"}</p>
+                  <small>Created: ${
+                    item.created_at
+                      ? new Date(item.created_at).toLocaleString()
+                      : "Unknown date"
+                  }</small>
+              </div>
+          `;
     });
 
     dataList.innerHTML = html;
   } catch (error) {
     console.error("Error fetching data:", error);
-    document.getElementById("data-list").innerHTML =
-      "<p>Error loading data. Please try again later.</p>";
+    dataList.innerHTML = `<p>Error loading data: ${error.message}. Please try again later.</p>`;
   }
 }
 
 async function addItem(name, description) {
   try {
+    console.log("Adding new item:", { name, description });
+
     const response = await fetch("/api/items", {
       method: "POST",
       headers: {
@@ -61,18 +88,33 @@ async function addItem(name, description) {
       body: JSON.stringify({ name, description }),
     });
 
+    console.log("Add item response status:", response.status);
+
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      // Try to read error details from response
+      let errorDetails = "";
+      try {
+        const errorData = await response.json();
+        errorDetails = errorData.error || errorData.details || "";
+      } catch (e) {
+        // If parsing fails, use status text
+        errorDetails = response.statusText;
+      }
+
+      throw new Error(`Server error: ${errorDetails}`);
     }
 
     // Clear form
     document.getElementById("item-name").value = "";
     document.getElementById("item-description").value = "";
 
+    // Show success message
+    alert("Item berhasil ditambahkan!");
+
     // Refresh data
     fetchItems();
   } catch (error) {
     console.error("Error adding item:", error);
-    alert("Error adding item. Please try again.");
+    alert(`Error adding item: ${error.message}. Please try again.`);
   }
 }
